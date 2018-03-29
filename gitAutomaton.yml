@@ -1,0 +1,231 @@
+states:
+  EPSILON:
+    description: Refers to the empty state.
+  CLONED:
+    effect: Repository Cloned.
+    description: Refers to the state where the repository is already CLONED.
+  INITIALIZED:
+    description: Refers to the state where the repository is already initilialized.
+  ADDED:
+    description: Refers to the state where the files are added to the staging area.
+  COMMITED:
+    description: Refers to the state where the files are commited in the staging area.
+  PUSHED:
+    description: Refers to the state where the files in the local repository are pushed to the remote repository
+  ERROR_EPSILON:
+    description: Refers to the error when there is an error in the initial state
+    effect: >
+      You should try initializing or cloning the repository.
+      Use `git init` or `git clone`
+  ERROR_CLONED_INITIALIZED:
+    description: Refers to the state when we try initialize an already cloned repository
+    effect: >
+      You already have git initilialized in this repository. Doing `git init` will replace your existing .git.
+  ERROR_CLONED_CLONED:
+    description: Refers to the state when we try execute `git clone` right after executing `git clone`.
+    effect: >
+     Executing a `git clone` inside an initilialized git repository would result in a creation of sub git repository.
+  ERROR_CLONED_COMMITED:
+    effect: >
+      You cant directly commit without adding files to the staging area. Try using `git add` command.
+  ERROR_CLONED_PUSHED:
+    effect: >
+      You cant directly push without adding and committing files to the staging area.
+      Try using `git add` and then `git commit`.
+      And if everything goes fine you should be able to successfully push to the remote repository.
+  ERROR_INITIALIZED_CLONED:
+    effect: >
+      The current repository is already initilialized with git. 
+      `git clone` would create a new repository in the current directory.'
+  ERROR_INITIALIZED_COMMITED:
+    effect: >
+      You cant directly commit without adding files to the staging area
+  ERROR_INITIALIZED_PUSHED:
+    effect: >
+      You cant directly push files without adding and commiting files to the staging area.
+      Try using `git add` and then `git commit`. 
+      And if everything goes fine you should be able to successfully push to the remote repository.
+  ERROR_ADDED_CLONED:
+    description: >
+      Refers to the error state when the user is trying to clone the repository after adding files to the staging area.
+    effect: >
+      This repository is already git initilialized. `git clone` would add a 
+  ERROR_ADDED_INITIALIZED:
+    description: >
+      Refers to the error when trying to the initializing repository after adding the files to the staging area.
+  ERROR_ADDED_PUSHED:
+    effect: >
+      Hey you are directly trying to push without commiting.
+      Consider doing `git commit` before pushing files to the remote repository. 
+  ERROR_COMMITTED_CLONED:
+    description: >
+      Refers to the state of the error,
+      when the user is trying to clone the repository after commiting files to the staging area.
+    effect: >
+      Hey you are trying to clone a repository in an existing Git repository.
+      This usually creates a sub git repository.
+  ERROR_COMMITTED_INITIALIZED:
+    effect: >
+      Hey you are trying to initialize inisde an existing git repository. 
+      To push your files to the git use `git push <remote name> <branch>`
+  ERROR_PUSHED_CLONED:
+    effect: >
+      Hey you are trying to execute `git clone`, 
+      which would create a new git sub repository inside the existing git repository.
+  ERROR_PUSHED_INITIALIZED:
+      effect: >
+        Hey you are trying to execute `git init` inside the existing git repository.
+  # ERROR_PUSHED_COMMITED
+  # ADDED_STATUS
+  # INITIALIZED_STATUS
+  # CLONED_STATUS
+  # COMMITED_STATUS
+  # PUSHED_STATUS
+  # EPSILON_HELPED
+  # ADDED_HELPED
+  # CLONED_HELPED
+  # INITIALIZED_HELPED
+  # PUSHED_HELPED
+  # COMMITED_HELPED
+start_state:
+  - EPSILON
+final_state:
+  - EPSILON
+  - CLONED
+  - INITIALIZED
+  - ADDED
+  - COMMITED
+  - PUSHED
+  - ERROR_EPSILON
+  - ERROR_CLONED_INITIALIZED
+  - ERROR_CLONED_CLONED
+  - ERROR_CLONED_COMMITED
+  - ERROR_CLONED_PUSHED
+  - ERROR_INITIALIZED_CLONED
+  - ERROR_INITIALIZED_COMMITED
+  - ERROR_INITIALIZED_PUSHED
+  - ERROR_ADDED_CLONED
+  - ERROR_ADDED_INITIALIZED
+  - ERROR_ADDED_PUSHED
+  - ERROR_COMMITTED_CLONED
+  - ERROR_COMMITTED_INITIALIZED
+  - ERROR_PUSHED_CLONED
+  - ERROR_PUSHED_INITIALIZED
+  - ERROR_PUSHED_COMMITED
+  - ADDED_STATUS
+  - INITIALIZED_STATUS
+  - CLONED_STATUS
+  - COMMITED_STATUS
+  - PUSHED_STATUS
+  - EPSILON_HELPED
+  - ADDED_HELPED
+  - CLONED_HELPED
+  - INITIALIZED_HELPED
+  - PUSHED_HELPED
+  - COMMITED_HELPED
+symbols:
+  - epsilon 
+  - "git clone.*"
+  - "git init.*"
+  - "git add.*"
+  - "git status.*"
+  - "git commit.*"
+  - "git push.*"
+  - "git help.*"
+transitions:
+  EPSILON:
+    epsilon: EPSILON
+    "git clone.*": CLONED
+    "git init.*": INITIALIZED
+    "git add.*": ERROR_EPSILON
+    "git status.*": ERROR_EPSILON
+    "git commit.*": ERROR_EPSILON
+    "git push.*": ERROR_EPSILON
+    "git help.*": EPSILON_HELPED
+  CLONED:
+    epsilon: CLONED
+    "git clone.*": ERROR_CLONED_CLONED
+    "git init.*": ERROR_CLONED_INITIALIZED
+    "git add.*": ADDED
+    "git status.*": CLONED_STATUS
+    "git commit.*": ERROR_CLONED_COMMITED
+    "git push.*": ERROR_CLONED_PUSHED
+    "git help.*": CLONED_HELPED
+  INITIALIZED:
+    epsilon: INITIALIZED
+    "git clone.*": ERROR_INITIALIZED_CLONED
+    "git init.*": INITIALIZED
+    "git add.*": ADDED
+    "git status.*": INITIALIZED_STATUS
+    "git commit.*": ERROR_INITIALIZED_COMMITED
+    "git push.*": ERROR_INITIALIZED_PUSHED
+    "git help.*": INITIALIZED_HELPED
+  ADDED:
+    epsilon: ADDED
+    "git clone.*": ERROR_ADDED_CLONED
+    "git init.*": ERROR_ADDED_INITIALIZED
+    "git add.*": ADDED
+    "git status.*": ADDED_STATUS
+    "git commit.*": COMMITED
+    "git push.*": ERROR_ADDED_PUSHED
+    "git help.*": ADDED_HELPED
+  COMMITED:
+    epsilon: COMMITED
+    "git clone.*": ERROR_COMMITTED_CLONED
+    "git init.*": ERROR_COMMITTED_INITIALIZED
+    "git add.*": ADDED
+    "git status.*": COMMITED_STATUS
+    "git commit.*": COMMITED
+    "git push.*": PUSHED
+    "git help.*": COMMITED_HELPED
+  PUSHED:
+    epsilon: PUSHED
+    "git clone.*": ERROR_PUSHED_CLONED
+    "git init.*": ERROR_PUSHED_INITIALIZED
+    "git add.*": ADDED
+    "git status.*": PUSHED_STATUS
+    "git commit.*": COMMITED
+    "git push.*": PUSHED
+    "git help.*": PUSHED_HELPED
+  ERROR_EPSILON:
+    epsilon: EPSILON
+  CLONED_HELPED:
+    epsilon: CLONED
+  CLONED_STATUS:
+    epsilon: CLONED
+  INITIALIZED_HELPED:
+    epsilon: INITIALIZED
+  INITIALIZED_STATUS:
+    epsilon: INITIALIZED
+  COMMITED_HELPED:
+    epsilon: COMMITED_HELPED
+  COMMITED_STATUS:
+    epsilon: COMMITED_STATUS
+  PUSHED_HELPED:
+    epsilon: PUSHED
+  PUSHED_STATUS:
+    epsilon: PUSHED
+  ERROR_CLONED_PUSHED:
+    epsilon: CLONED
+  ERROR_CLONED_COMMITED:
+    epsilon: COMMITED
+  ERROR_CLONED_CLONED:
+    epsilon: CLONED
+  ERROR_CLONED_INITIALIZED:
+    epsilon: CLONED
+  ERROR_INITIALIZED_PUSHED:
+    epsilon: INITIALIZED
+  ERROR_INITIALIZED_COMMITED:
+    epsilon: INITIALIZED
+  ERROR_INITIALIZED_CLONED:
+    epsilon: INITIALIZED
+  ERROR_COMMITTED_INITIALIZED:
+    epsilon: COMMITED
+  ERROR_COMMITTED_CLONED:
+    epsilon: COMMITED
+  ERROR_PUSHED_INITIALIZED:
+    epsilon: PUSHED
+  ERROR_PUSHED_CLONED:
+    epsilo
+  ERROR_PUSHED_COMMITED:
+    epsilon: PUSHED
